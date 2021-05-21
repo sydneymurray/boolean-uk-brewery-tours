@@ -1,0 +1,6 @@
+cd \Users\sydney\Desktop\VS-Code\boolean-uk-brewery-tours
+json-server --watch db/db.json 
+
+https://kq728.csb.app/
+
+

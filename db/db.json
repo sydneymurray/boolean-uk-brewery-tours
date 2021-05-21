@@ -1,0 +1,104 @@
+{
+  "products": [
+    {
+      "id": "001-beetroot",
+      "name": "beetroot",
+      "price": 0.35
+    },
+    {
+      "id": "002-carrot",
+      "name": "carrot",
+      "price": 0.7
+    },
+    {
+      "id": "003-apple",
+      "name": "apple",
+      "price": 0.2
+    },
+    {
+      "id": "004-apricot",
+      "name": "apricot",
+      "price": 0.25
+    },
+    {
+      "id": "005-avocado",
+      "name": "advocado",
+      "price": 0.2
+    },
+    {
+      "id": "006-banana",
+      "name": "banana",
+      "price": 0.2
+    },
+    {
+      "id": "007-bell-pepper",
+      "name": "bell-pepper",
+      "price": 0.15
+    },
+    {
+      "id": "008-berry",
+      "name": "berry",
+      "price": 0.5
+    },
+    {
+      "id": "009-blueberry",
+      "name": "blueberry",
+      "price": 0.35
+    },
+    {
+      "id": "010-eggplant",
+      "name": "eggplant",
+      "price": 0.35
+    }
+  ],
+  "cart": [
+    {
+      "id": "003-apple",
+      "name": "apple",
+      "price": 0.2,
+      "quantity": 3
+    },
+    {
+      "id": "004-apricot",
+      "name": "apricot",
+      "price": 0.25,
+      "quantity": 8
+    },
+    {
+      "id": "008-berry",
+      "name": "berry",
+      "price": 0.5,
+      "quantity": 6
+    },
+    {
+      "id": "009-blueberry",
+      "name": "blueberry",
+      "price": 0.35,
+      "quantity": 19
+    },
+    {
+      "id": "007-bell-pepper",
+      "name": "bell-pepper",
+      "price": 0.15,
+      "quantity": 5
+    },
+    {
+      "id": "006-banana",
+      "name": "banana",
+      "price": 0.2,
+      "quantity": 5
+    },
+    {
+      "id": "010-eggplant",
+      "name": "eggplant",
+      "price": 0.35,
+      "quantity": 3
+    },
+    {
+      "id": "001-beetroot",
+      "name": "beetroot",
+      "price": 0.35,
+      "quantity": 3
+    }
+  ]
+}
