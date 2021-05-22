@@ -138,8 +138,8 @@ function displayBrewery(brewery){
     if (selectedCityList.length !== 0 && selectedCityList.indexOf(brewery.city) === -1) 
         return
 
-    // IF "SEARCH BREWERIES IS NOT EMPTY" AND THE CRITERIA IS NOT PRESENT
-    // IN THE NAME OR CITY THEN DO NOT DISPLAY BREWERY
+    // IF "SEARCH BREWERIES" IS NOT EMPTY AND THE CRITERIA IS NOT PRESENT
+    // IN THE NAME OR CITY THEN DO NOT DISPLAY THE BREWERY
     if (listSectionSearch !== "") 
         if (!brewery.name.toUpperCase().includes(listSectionSearch.toUpperCase()) && !brewery.city.toUpperCase().includes(listSectionSearch.toUpperCase())) 
             return
@@ -327,7 +327,7 @@ function createfilterByCitySection(){
     for (const brewery of breweries) 
            breweryCityList.push(brewery.city)
     
-    // REMOVE DUPLICATE CITIES ANMD SORT ALPHABETICALLY 
+    // REMOVE DUPLICATE CITIES AND SORT THEM ALPHABETICALLY 
     let breweryCitySet = new Set (breweryCityList.sort())
     breweryCityList = Array.from(breweryCitySet)
 
@@ -342,6 +342,7 @@ function createCityCheckBoxItems(breweryCityList){
         createCityCheckBoxItem(city)
 } 
 
+// CREATE A CHECKBOX FOR EVERY CITY THERES A BREWERY PRESENT
 function createCityCheckBoxItem(city){
     let filterByCityForm = document.querySelector("#filter-by-city-form")
 
@@ -356,9 +357,11 @@ function createCityCheckBoxItem(city){
     cityInputCheckBoxLabel.setAttribute("for",city)
     cityInputCheckBoxLabel.innerText = city
     filterByCityForm.append(cityInputCheckBoxLabel)
-
+    
+    // ADD AN EVENT LISTENER TO RE-DISPLAY THE BREWERIES
     cityInputCheckBox.addEventListener("change", function(event){
-
+        
+        // ADD CITY TO THE LIST TO BE REDISPLAYED BUT IF ALREADY IN THE LIST THEN REMOVE IT
         if (cityInputCheckBox.checked)
             selectedCityList.push(cityInputCheckBox.value)
         else {
