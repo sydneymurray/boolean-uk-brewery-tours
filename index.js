@@ -131,10 +131,12 @@ function displayBrewery(brewery){
         return
     
     // IF BREWERY TYPE IS SELECTED. DOES IT MATCH THE BREWERY?
+    // IF NOT DO NOT DISPLAY THE BREWERY
     if (breweryTypeFilter !== "" && breweryTypeFilter !== brewery.brewery_type) 
         return
 
     // IF THERE ARE CITIES SELECTED. DO ANY OF THEM MATCH THE BREWERY?
+    // IF NOT DO NOT DISPLAY THE BREWERY
     if (selectedCityList.length !== 0 && selectedCityList.indexOf(brewery.city) === -1) 
         return
 
@@ -342,7 +344,7 @@ function createCityCheckBoxItems(breweryCityList){
         createCityCheckBoxItem(city)
 } 
 
-// CREATE A CHECKBOX FOR EVERY CITY THERES A BREWERY PRESENT
+// CREATE A CHECKBOX FOR EVERY CITY WHERE THERES A BREWERY PRESENT
 function createCityCheckBoxItem(city){
     let filterByCityForm = document.querySelector("#filter-by-city-form")
 
