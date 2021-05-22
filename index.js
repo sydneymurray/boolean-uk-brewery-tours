@@ -3,6 +3,10 @@
 
 let breweries = []
 let selectedState = ""
+let breweryTypeFilter = ""
+let selectedCityList = []
+let breweryDisplayCounter = 0
+let listSectionSearch = ""
 
 /////////////////////////////////////////////////////////////////////////
 // ALL FUNCTIONS ARE DECLARED HERE
@@ -31,21 +35,17 @@ function retrieveDataFromExternalDatabase(){
         return promise.json()
     })
     .then(function (data) {
-        breweries = data
-        cleanData()
+        cleanData(data)
         displayMainSection()
     })
 }
 
-function cleanData(){
+function cleanData(data){
 
     // FILTER BREWERIES BY MICRO, REGIONAL & BREWPUB
-    let filteredBreweries = breweries.filter(function(brewery){
+    breweries = data.filter(function(brewery){
         return (brewery.brewery_type === "micro" || brewery.brewery_type === "regional" || brewery.brewery_type === "brewpub") 
     })
-
-    // REDUCE THE ARRAY TO 10 ITEMS
-    breweries = filteredBreweries.slice(0,10)
 }
 
 function displayMainSection(){
@@ -73,6 +73,16 @@ function displayListSection(){
     listSectionForm.setAttribute("id","search-breweries-form")
     listSectionForm.setAttribute("autocomplete","off")
     listSectionHeader.append(listSectionForm)
+
+    listSectionForm.addEventListener("submit",(function(event){
+        event.preventDefault() 
+        listSectionSearch  = listSectionInput.value 
+        listSectionInput.value = ""
+        displayListOfBreweries()
+        
+        // CLEAR THE SEARCH STATUS TO PREVENT UNPREDICTABLE RESULTS
+        listSectionSearch = ""
+    }))
     
     // CREATE "SEARCH BREWERIES" LABEL
     let listSectionLabel = document.createElement("label")
@@ -100,11 +110,44 @@ function displayListSection(){
     breweryList.setAttribute("class","breweries-list")
     listSectionArticle.append(breweryList)
 
+    displayListOfBreweries()
+}
+
+
+// DISPLAYS ALL THE BREWERY DETAILS IN A UNORDERED LIST
+function displayListOfBreweries(){
+    let breweryUL = document.querySelector("ul")
+    breweryUL.innerHTML = "" 
+    
+    breweryDisplayCounter = 0
     for (const brewery of breweries) 
         displayBrewery(brewery)
 }
 
 function displayBrewery(brewery){
+
+    // ARE THERE 10 BREWERIES ALREADY DISPLAYED ON SCREEN?
+    if (breweryDisplayCounter === 10) 
+        return
+    
+    // IF BREWERY TYPE IS SELECTED. DOES IT MATCH THE BREWERY?
+    if (breweryTypeFilter !== "" && breweryTypeFilter !== brewery.brewery_type) 
+        return
+
+    // IF THERE ARE CITIES SELECTED. DO ANY OF THEM MATCH THE BREWERY?
+    if (selectedCityList.length !== 0 && selectedCityList.indexOf(brewery.city) === -1) 
+        return
+
+    // IF "SEARCH BREWERIES IS NOT EMPTY" AND THE CRITERIA IS NOT PRESENT
+    // IN THE NAME OR CITY THEN DO NOT DISPLAY BREWERY
+    if (listSectionSearch !== "") 
+        if (!brewery.name.toUpperCase().includes(listSectionSearch.toUpperCase()) && !brewery.city.toUpperCase().includes(listSectionSearch.toUpperCase())) 
+            return
+
+    // INCREMENT THE DISPLAY BREWERY COUNTER
+    breweryDisplayCounter++
+    
+    // FIND THE BREWERY LIST SECTION ON THE PAGE
     let breweryList = document.querySelector(".breweries-list")
     let breweryLi = document.createElement("li")
     breweryList.append(breweryLi)
@@ -141,8 +184,8 @@ function displayBrewery(brewery){
     
     // CREATE A STRONG FOR THE ADDRESS3
     let breweryLiSectionAddressS = document.createElement("strong")
-    breweryLiSectionAddressS.innerText = brewery.address_2
-    breweryLiSectionAddress.append(breweryLiSectionAddressS)
+    breweryLiSectionAddressS.innerText = brewery.city + ", " + brewery.postal_code
+    breweryLiSectionAddressP2.append(breweryLiSectionAddressS)
 
     // CREATE A SECTION FOR THE PHONE
     let breweryLiSectionPhone = document.createElement("section")
@@ -231,6 +274,12 @@ function displayFiltersSection(){
     filtersSectionSelectBrewpub.innerText = "Brewpub"
     filtersSectionSelect.append(filtersSectionSelectBrewpub)
 
+    // LISTEN FOR TYPE OF BREWERY AND RE-DISPLAY THE LIST
+    filtersSectionForm.addEventListener("change", function(event){
+        breweryTypeFilter = filtersSectionSelect.value
+        displayListOfBreweries()
+    })
+
     // CREATE FILTER BY CITY DIV
     let filtersSectionDiv = document.createElement("div")
     filtersSectionDiv.setAttribute("class","filter-by-city-heading")
@@ -241,22 +290,87 @@ function displayFiltersSection(){
     filtersSectionDivH3.innerText = "Cities"
     filtersSectionDiv.append(filtersSectionDivH3)
 
-    // CREATE CLEAR BUTTON
+    // CREATE CLEAR ALL BUTTON
     let filtersSectionDivButton = document.createElement("button")
     filtersSectionDivButton.setAttribute("class","clear-all-btn")
     filtersSectionDivButton.innerText = "clear all"
     filtersSectionDiv.append(filtersSectionDivButton)
+
+    // EVENT HANDLER TO CLEAR ALL TICKED CITY FILTERS
+    filtersSectionDivButton.addEventListener("click",(function(event){
+        
+        // CLEAR THE SELECTED CITY LIST
+        selectedCityList = []
+        
+        // FIND EVERY CHECKBOX AND UNCHECK THEM
+        let checkBoxes = document.querySelectorAll(".checkbox-reset-marker")
+        for (const box of checkBoxes)
+            box.checked = false 
+        displayListOfBreweries()
+    }))
+
 
     // CREATE FILTER BY CITY FORM
     let filterByCityForm = document.createElement("form")
     filterByCityForm.setAttribute("id","filter-by-city-form")
     filtersSectionAside.append(filterByCityForm)
 
-    // CREATE A FILTER BY CITY CHECKBOX FOR EACH ITEM
-    // FOR OF LOOP
-
+    // CREATE A FILTER BY CITY SECTIONCHECKBOX FOR EACH ITEM
+    createfilterByCitySection()
 }
 
+// CREATE A FILTER BY CITY SECTION CHECKBOX FOR EACH ITEM
+function createfilterByCitySection(){
+
+    // CREATE A LIST OF CITIES
+    let breweryCityList = []
+    for (const brewery of breweries) 
+           breweryCityList.push(brewery.city)
+    
+    // REMOVE DUPLICATE CITIES ANMD SORT ALPHABETICALLY 
+    let breweryCitySet = new Set (breweryCityList.sort())
+    breweryCityList = Array.from(breweryCitySet)
+
+    // CREATE 'CITY' CHECKBOX ITEM
+    createCityCheckBoxItems(breweryCityList) 
+}
+
+// CREATE 'CITY' CHECKBOX ITEM
+function createCityCheckBoxItems(breweryCityList){
+
+    for (const city of breweryCityList) 
+        createCityCheckBoxItem(city)
+} 
+
+function createCityCheckBoxItem(city){
+    let filterByCityForm = document.querySelector("#filter-by-city-form")
+
+    let cityInputCheckBox = document.createElement("input")
+    cityInputCheckBox.setAttribute("type","checkbox")
+    cityInputCheckBox.setAttribute("name",city)
+    cityInputCheckBox.setAttribute("value",city)
+    cityInputCheckBox.setAttribute("class","checkbox-reset-marker")
+    filterByCityForm.append(cityInputCheckBox)
+
+    let cityInputCheckBoxLabel = document.createElement("label")
+    cityInputCheckBoxLabel.setAttribute("for",city)
+    cityInputCheckBoxLabel.innerText = city
+    filterByCityForm.append(cityInputCheckBoxLabel)
+
+    cityInputCheckBox.addEventListener("change", function(event){
+
+        if (cityInputCheckBox.checked)
+            selectedCityList.push(cityInputCheckBox.value)
+        else {
+            let filteredCityList = selectedCityList.filter(function(city){
+            return city !== cityInputCheckBox.value
+            })
+            selectedCityList = filteredCityList
+        }
+        displayListOfBreweries()
+    })
+
+}
 
 
 /////////////////////////////////////////////////////////////////////////
